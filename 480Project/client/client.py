@@ -20,7 +20,7 @@ sharedDir = ""
 FileList = []
 requested = ""
 
-signal.signal(singal.SIGINT, sigint_handler)
+signal.signal(signal.SIGINT, sigint_handler)
 
 
 def makeConnection(tracker, inputStream, prevCommand):
@@ -277,25 +277,26 @@ def main():
     logging.getLogger("").addHandler(console)
 
     configFile = "config.json"
+    print("Welcome to the SuperNOVA network")
     if os.path.isfile(configFile):
         config = json_load(configFile)
     else:
         # else new server config file in json format
         config["trackerIP"] = "localhost"
         #!todo change the port
-        config["trackerPort"] = "45000"
+        config["trackerPort"] = 45000
         config["peerListeningIP"] = "localhost"
         config["peerListeningPORT"] = "0"
         config["sharedDIR"] = getSharedDIR()
         json_save(configFile, config)
     logging.debug("configuration : " + str(config))
-    sharedDir = config["sharedDIr"]
-    avFile = [avfile for avfile in os.path.listdir(
+    sharedDir = config["sharedDIR"]
+    avFile = [avfile for avfile in os.listdir(
         sharedDir) if os.path.isfile(os.path.join(sharedDir, avfile))]
     logging.debug("list of files avaialble for sharing is" + str(avFile))
     trackerAdd = (config["trackerIP"], config["trackerPort"])
     # connect this peer with tracker
-    tracker = InitializeConnection(trackerAdd)
+    tracker = InitializeConnection(trackerAdd)  # !error
     inputStream = ""
     if "user" in config:
         # if the user already in the list ( tracker list)
@@ -327,7 +328,6 @@ def main():
     makeConnection(tracker, inputStream, "SENDLIST")
 
     # MENU
-    print("Welcome to the SuperNOVA network")
     while True:
         print()
         print("Available commands")
@@ -352,7 +352,10 @@ def main():
             transmitMessageToPeer(tracker, "WHERE" + peerName + "\n\0")
             (peerIP, peerPORT), inputStream = makeConnection(
                 tracker, inputStream, "WHERE")
-            peer = InitializeConnection(peerIP, peerPORT)
+
+            # print("peerIP is {}".format(peerIP))
+
+            peer = InitializeConnection((peerIP, peerPORT))
             # get the file from the peer
             getFile(peer)
         elif command == "3":

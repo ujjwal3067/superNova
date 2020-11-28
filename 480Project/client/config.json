@@ -1,0 +1,7 @@
+{
+    "peerListeningIP": "localhost",
+    "peerListeningPORT": "0",
+    "sharedDIR": "test",
+    "trackerIP": "localhost",
+    "trackerPort": 45000
+}

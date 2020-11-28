@@ -1,0 +1,3 @@
+[DEBUG] (MainThread) configuration : {'sharedDIR': 'test', 'peerListeningPORT': '0', 'trackerPort': 45000, 'trackerIP': 'localhost', 'peerListeningIP': 'localhost'}
+[DEBUG] (MainThread) list of files avaialble for sharing is[]
+[INFO] (MainThread) port connection error in during Initialization
