@@ -14,7 +14,7 @@ def sigint_handler(signal, frame):
     sys.exit(0)
 
 
-def send_message(connection, message):
+def transmitMessageToPeer(connection, message):
     try:
         connection.sendall(message)
     except socket.error:
