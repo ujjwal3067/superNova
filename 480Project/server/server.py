@@ -52,14 +52,14 @@ def makeConnection(connection, peer, inputStream, prevCommand):
             # keep the counter for default username
             # TODO :: change to peer_i
             user = "u{}".format(config["userOffset"])
-            transmitMessageToPeer(connection, "AVAILABLE" + user + "\n\0")
+            transmitMessageToPeer(connection, "AVAILABLE " + user + "\n\0")
             return makeConnection(connection, peer, inputStream, "AVAILABLE")
         else:
             user = fields[1]
             if user in peers:
                 connectedPeers[peer] = user
                 # //TODO MISSED  a debug statement here
-                transmitMessageToPeer(connection, "WELCOME" + user + "\n\0")
+                transmitMessageToPeer(connection, "WELCOME " + user + "\n\0")
                 return makeConnection(connection, peer, inputStream, "WELCOME")
             else:
                 # send error message " cannot find the username"
@@ -72,7 +72,7 @@ def makeConnection(connection, peer, inputStream, prevCommand):
             json_save(configFile, config)
             # ? default name TODO : change it to Peer
             user = "u{}".format(config["userOffset"])
-            transmitMessageToPeer(connection, "AVAILABLE"+user + "\n\0")
+            transmitMessageToPeer(connection, "AVAILABLE "+user + "\n\0")
             return makeConnection(connection, peer, inputStream, "AVAILABLE")
         else:
             peers[user] = {"files": [],
@@ -80,7 +80,7 @@ def makeConnection(connection, peer, inputStream, prevCommand):
                            "listeningPORT": None}
             json_save(peersFile, peers)
             connectedPeers[peer] = user
-            transmitMessageToPeer(connection, "WELCOME" + user + "\n\0")
+            transmitMessageToPeer(connection, "WELCOME " + user + "\n\0")
             return inputStream, "WELCOME"
     elif command == "LISTENING":
         peers[connectedPeers[peer]]["listeningIP"] = fields[1]
@@ -131,3 +131,73 @@ def makeConnection(connection, peer, inputStream, prevCommand):
     else:
         print("invalid command from peer")
         sys.exit(-1)
+
+
+def PEER(connection, address):
+    inputStream = ""
+    prevCommand = ""
+    while True:
+        incomingConnectionRequest = connection.recv(4096)
+        if len(incomingConnectionRequest) == 0:
+            print("no connection was established")
+            break
+        else:
+            inputStream += incomingConnectionRequest
+            # try to establish a connection
+        inputStream, prevCommand = makeConnection(
+            connection, address, inputStream, prevCommand)
+
+
+def main():
+    print("Starting the Tracker on port 45000")
+    global configFile
+    global config
+    global peersFile
+    global peers
+    # TODO : skip logging
+    configFile = "config.json"
+    peersFile = "peers.json"
+    if os.path.isfile(configFile):
+        config = json_load(configFile)  # load the server config files
+    else:
+        # init a new one
+        config["HOST"] = "localhost"
+        config["PORT"] = 45000
+        config["userOffset"] = 0
+        json_save(configFile, config)
+
+    # load the connected peers  from json file
+    if os.path.isfile(peersFile):
+        peers = json_load(peersFile)
+    else:
+        json_save(peersFile, peers)
+
+    try:
+        serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    except socket.error:
+        sys.exit(-1)
+
+    host = config["HOST"]
+    port = config["PORT"]
+
+    try:
+        serverSocket.bind((host, port))
+    except socket.error:
+        print("There was an error while setuping the server socket")
+        print("Existing superNOVA bootUP Stage")
+        sys.exit(-1)
+
+    # listening from incoming connection from peer on the server socket
+    serverSocket.listen(5)
+    peerCounter = 0
+    while True:
+        connection, address = serverSocket.accept()
+        peerThread = Thread(name="peer {}".format(
+            peerCounter), target=PEER, args=(connection, address))
+        peerThread.daemon = True
+        peerThread.start()
+        peerCounter += 1
+
+
+if __name__ == "__main__":
+    main()

@@ -45,7 +45,7 @@ def makeConnection(tracker, inputStream, prevCommand):
     if command == "AVAILABLE":
         user = fields[1]
         user = getUserName(user)
-        transmitMessageToPeer(tracker, "IWANT" + user + "\n\0")
+        transmitMessageToPeer(tracker, "IWANT " + user + "\n\0")
         # we are recursively sending the previous command so that peer rememeber it's last commnad
         # for the next sequential step
         return makeConnection(tracker, inputStream, "IWANT")
@@ -156,7 +156,7 @@ def Peer(socketConnection, address):
             if os.path.isfile(fileSharing):
                 fileSharingSIZE = os.path.getsize(fileSharing)  # file size
                 transmitMessageToPeer(
-                    socketConnection, "TAKE{}\n\0".format(str(fileSharingSIZE)))
+                    socketConnection, "TAKE {}\n\0".format(str(fileSharingSIZE)))
                 # preparing the the file to send away
                 fileSharingSEND = open(fileSharing, "rb")
                 fileREADER = ""
@@ -226,7 +226,7 @@ def getFile(peer):
     print("file name: ")
     requested = raw_input()
     # ask for the file from the other peer
-    transmitMessageToPeer(peer, "GIVE{}\n\0".format(requested))
+    transmitMessageToPeer(peer, "GIVE {}\n\0".format(requested))
     inputStream = ""
     while "\0" not in inputStream:
         inputStream += peer.recv(4096)

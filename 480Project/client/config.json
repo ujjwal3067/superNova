@@ -3,5 +3,6 @@
     "peerListeningPORT": "0",
     "sharedDIR": "test",
     "trackerIP": "localhost",
-    "trackerPort": 45000
+    "trackerPort": 45000,
+    "user": "u1"
 }
