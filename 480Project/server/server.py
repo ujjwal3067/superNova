@@ -45,6 +45,8 @@ def makeConnection(connection, peer, inputStream, prevCommand):
     fields = lines[0].split()
     command = fields[0]
 
+    print("got the Command {}".format(prevCommand))
+
     if command == "HELLO":
         if len(fields) == 1:
             config["userOffset"] += 1
@@ -65,6 +67,11 @@ def makeConnection(connection, peer, inputStream, prevCommand):
                 # send error message " cannot find the username"
                 transmitMessageToPeer(connection, "ERROR\n\0")
                 return inputStream, "ERROR"
+
+        '''
+        IWANT COMMAND :##################
+
+        '''
     elif command == "IWANT":
         user = fields[1]
         if user in peers:
@@ -82,22 +89,43 @@ def makeConnection(connection, peer, inputStream, prevCommand):
             connectedPeers[peer] = user
             transmitMessageToPeer(connection, "WELCOME " + user + "\n\0")
             return inputStream, "WELCOME"
+
+        '''
+        LISTENING COMMAND :################
+
+        '''
     elif command == "LISTENING":
         peers[connectedPeers[peer]]["listeningIP"] = fields[1]
         peers[connectedPeers[peer]]["listeningPORT"] = fields[2]
         json_save(peersFile, peers)
+
+        print(" peers : " + str(peers))
+
         transmitMessageToPeer(connection, "OK\n\0")
         return inputStream, "OK"
+
+        '''
+        LIST COMMAND :#####################
+
+        '''
     elif command == "LIST":
         filesCount = int(fields[1])
         if filesCount != (len(lines) - 1):
-            transmitMessageToPeer("invalid command : wrong number of files")
+            print("invalid command : wrong number of files")
+            # TODO : ERROR FIXED HERE
+            transmitMessageToPeer(connection, "ERROR\n\0")
             sys.exit(-1)
         else:
             peers[connectedPeers[peer]]["files"] = lines[1:]
             json_save(peersFile, peers)  # save the file back
+        # send the information to the peer
         transmitMessageToPeer(connection, "OK\n\0")
         return inputStream, "OK"
+
+        '''
+        SENDLIST COMMAND :#################
+        
+        '''
 
     elif command == "SENDLIST":
         totalFilesCount = 0
@@ -111,6 +139,12 @@ def makeConnection(connection, peer, inputStream, prevCommand):
         fullmsg += "\0"
         transmitMessageToPeer(connection, fullmsg)
         return makeConnection(connection, peer, inputStream, "FULLLIST")
+
+        '''
+
+        WHERE COMMAND :#####################
+
+        '''
 
     elif command == "WHERE":
         peer = fields[1]

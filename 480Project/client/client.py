@@ -3,7 +3,6 @@
 
 from __future__ import print_function
 import logging
-from logging import DEBUG, FileHandler
 import os
 import signal
 import socket
@@ -46,6 +45,7 @@ def makeConnection(tracker, inputStream, prevCommand):
     fields = lines[0].split()
     command = fields[0]
 
+    # print("fucked up prevCommand {}".format(prevCommand))
     if command == "AVAILABLE":
         user = fields[1]
         user = getUserName(user)
@@ -82,6 +82,7 @@ def makeConnection(tracker, inputStream, prevCommand):
         return (peerIP, peerPORT), inputStream
 
     elif command == "OK" and prevCommand in ("LIST", "LISTENING"):
+        print("LIST prev command was called")
         return None, inputStream
     elif command == "ERROR":
         logging.warning(
@@ -315,7 +316,7 @@ def main():
     # connect this peer with tracker
     print("printing tracker information")
     print(trackerAdd)  # gives correct addresss of tracker
-    tracker = InitializeConnection(trackerAdd)  # !error
+    tracker = InitializeConnection(trackerAdd)
 
     print("connection is done")
     inputStream = ""
@@ -326,6 +327,12 @@ def main():
         # else this means this is peer's first time connecting to tracker
         transmitMessageToPeer(tracker, "HELLO\n\0")
     data, inputStream = makeConnection(tracker, inputStream, "HELLO")
+
+    '''
+    
+    LISTENING FOR PEER CONNECTION COMMAND :###############
+    
+    '''
     peerListeningIP = config["peerListeningIP"]
     peerListeningPORT = config["peerListeningPORT"]
     queue = Queue.Queue()
@@ -339,12 +346,31 @@ def main():
     makeConnection(tracker, inputStream, "LISTENING")
     print("this peer is all setup and listening for incoming peer connections")
 
+    '''
+    
+    LIST COMMAND :###############
+    
+    '''
+
     msg_list = "LIST {}\n".format(len(avFile))
     for avfile in avFile:
         msg_list += avfile + "\n"
     msg_list += "\0"
-    transmitMessageToPeer(tracker, inputStream, "LIST")
+    transmitMessageToPeer(tracker, inputStream)  # ? fixed error here
 
+    print(" break point ..................")
+    print(msg_list)
+
+    print("calling make connection with LIST")
+    makeConnection(tracker, inputStream, "LIST")  # !ERROR
+    #!error never called the breakPoint
+    print(" break point ..................")
+
+    '''
+    
+    SENDLIST COMMAND :###############
+    
+    '''
     transmitMessageToPeer(tracker, "SENDLIST" + "\n\0")
     makeConnection(tracker, inputStream, "SENDLIST")
 

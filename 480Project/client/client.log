@@ -1,9 +1,0 @@
-[DEBUG] (MainThread) configuration : {'sharedDIR': 'test', 'peerListeningPORT': 0, 'trackerPort': 45000, 'trackerIP': 'localhost', 'peerListeningIP': 'localhost'}
-[INFO] (MainThread) cannot connect to the peer or tracker localhost:45000 
-[INFO] (MainThread) message sent to the client
-[INFO] (MainThread) Message Received : AVAILABLE u1
-[INFO] (MainThread) message sent to the client
-[INFO] (MainThread) Message Received : WELCOME u1
-[INFO] (PeerConnectionThread) client listening on localhost:0
-[INFO] (MainThread) message sent to the client
-[INFO] (MainThread) Message Received : OK
