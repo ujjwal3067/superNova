@@ -21,7 +21,7 @@ def transmitMessageToPeer(connection, message):
         logging.error("erorr while sending message")
         # exit the app in faulty state
         sys.exit(-1)
-    logging.info("message sent to the client")
+    logging.info("message sent to the client" + message)
 
 
 def json_load(jsonFile):

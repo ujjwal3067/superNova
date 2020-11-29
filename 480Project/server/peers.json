@@ -1,7 +1,7 @@
 {
     "u1": {
         "files": [],
-        "listeningIP": "",
-        "listeningPORT": null
+        "listeningIP": "localhost",
+        "listeningPORT": "0"
     }
 }

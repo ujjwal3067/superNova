@@ -16,6 +16,7 @@ from library.library import json_save
 from library.library import transmitMessageToPeer
 
 # global variables
+DEBUG = True
 configFile = ""
 config = {}
 sharedDir = ""
@@ -44,6 +45,7 @@ def makeConnection(tracker, inputStream, prevCommand):
     # extracting the command from the other peer inputStream
     fields = lines[0].split()
     command = fields[0]
+
     if command == "AVAILABLE":
         user = fields[1]
         user = getUserName(user)
@@ -56,6 +58,7 @@ def makeConnection(tracker, inputStream, prevCommand):
         user = fields[1]
         config["user"] = user
         json_save(configFile, config)
+        return None, inputStream  # TODO error fixed
 
     elif command == "FULLLIST" and prevCommand == "SENDLIST":
         filesCount = int(fields[1])
@@ -152,6 +155,9 @@ def Peer(socketConnection, address):
         fields = msg.split()
         # extract the command out of inputStream buffer string
         command = fields[0]
+
+        # *processing request
+
         if command == "GIVE":
             fileSharing = sharedDir + "/" + fields[1]
             # go to the path of the file the other peer wants
@@ -202,6 +208,7 @@ def incomingPeerConnections(peerIP, peerPORT, queue):
     # server connection for listening for incoming peer connections
     incomingSocket.listen(5)
     logging.info("client listening on {}:{}".format(peerIP, str(peerPORT)))
+    #! possible ERROR
     incomingPeerConnectionPORT = incomingSocket.getsockname()[1]
     queue.put((peerIP, peerPORT))
     peerCount = 0
@@ -279,6 +286,7 @@ def main():
     logging.getLogger("").addHandler(console)
 
     configFile = "config.json"
+
     print("Welcome to the SuperNOVA network")
     if os.path.isfile(configFile):
         config = json_load(configFile)
@@ -288,17 +296,28 @@ def main():
         #!todo change the port
         config["trackerPort"] = 45000
         config["peerListeningIP"] = "localhost"
-        config["peerListeningPORT"] = "0"
+        config["peerListeningPORT"] = 0
         config["sharedDIR"] = getSharedDIR()
         json_save(configFile, config)
+
     logging.debug("configuration : " + str(config))
+
     sharedDir = config["sharedDIR"]
+
     avFile = [avfile for avfile in os.listdir(
         sharedDir) if os.path.isfile(os.path.join(sharedDir, avfile))]
-    logging.debug("list of files avaialble for sharing is" + str(avFile))
+
+    # logging.debug("list of files avaialble for sharing is" + str(avFile))
+
+    print("available files are {}".format(str(avFile)))
+
     trackerAdd = (config["trackerIP"], config["trackerPort"])
     # connect this peer with tracker
+    print("printing tracker information")
+    print(trackerAdd)  # gives correct addresss of tracker
     tracker = InitializeConnection(trackerAdd)  # !error
+
+    print("connection is done")
     inputStream = ""
     if "user" in config:
         # if the user already in the list ( tracker list)
