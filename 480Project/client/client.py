@@ -212,7 +212,6 @@ def incomingPeerConnections(peerIP, peerPORT, queue):
         sys.exit(-1)
     # server connection for listening for incoming peer connections
     incomingSocket.listen(5)
-    #! EERROR : PORT = 0 always
     logging.info("client listening on {}:{}".format(peerIP, str(peerPORT)))
     #! possible ERROR
     incomingPeerConnectionPORT = incomingSocket.getsockname()[1]
@@ -439,6 +438,8 @@ def main():
 
             print(
                 "Initializing connection[in separate thread] with {} ".format(peerName))
+
+            #!ERROR HERE
             peer = InitializeConnection((peerIP, peerPORT))
             # get the file from the peer
             getFile(peer)

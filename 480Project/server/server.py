@@ -149,10 +149,16 @@ def makeConnection(connection, peer, inputStream, prevCommand):
 
     elif command == "WHERE":
         peer = fields[1]
+        print("INSIDE WHERE ")
+        print("peer is looking for {}".format(peer))
+        print("peers are {}".format(peers))
+
         if peer in peers:
             peerIP = peers[peer]["listeningIP"]
             peerPORT = peers[peer]["listeningPORT"]
+
             outputmsg = "AT {} {}\n\0".format(peerIP, peerPORT)
+
             transmitMessageToPeer(connection, outputmsg)
             return inputStream, "WHERE"
         else:
