@@ -436,7 +436,7 @@ def main():
         print()
         print("Available commands")
         print("1: request the list of peers and files available")
-        print("2: send file to a peer")
+        print("2: request file from a peer")
         print("3: new sharing Dir")
         print("4: exit the superNOVA P2P network")
 
