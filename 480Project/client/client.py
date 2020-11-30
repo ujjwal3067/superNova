@@ -26,7 +26,9 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 
 def makeConnection(tracker, inputStream, prevCommand):
-    global configFile
+
+    global config
+    # global configFile
     global FileList  # list of all the files in overlay network
     global requested  # file request by the peer
 
@@ -44,6 +46,8 @@ def makeConnection(tracker, inputStream, prevCommand):
     # extracting the command from the other peer inputStream
     fields = lines[0].split()
     command = fields[0]
+
+    print("command is ... ---> {}".format(prevCommand))
 
     # print("fucked up prevCommand {}".format(prevCommand))
     if command == "AVAILABLE":
@@ -100,6 +104,11 @@ def makeConnection(tracker, inputStream, prevCommand):
 # !ERROR HERE
 def InitializeConnection(address):
     IP, PORT = address
+    print("---------------------------------------")
+    print("Inside InitializationConnection Method ")
+    print("[INFO]  IP of peer is {}".format(IP))
+    print("[INFO] PORT of peer is {}".format(PORT))
+    print("---------------------------------------")
     try:
         peerConnection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     except socket.error:
@@ -107,7 +116,7 @@ def InitializeConnection(address):
         sys.exit(-1)
 
     try:
-        peerConnection.connect((IP, PORT))
+        peerConnection.connect((IP, PORT))  # !ERROR
         logging.info(
             "CONNECTED to the peer or tracker {}:{} ".format(IP, PORT))
     except socket.error:
@@ -155,12 +164,15 @@ def Peer(socketConnection, address):
         index = inputStream.index("\0")
         msg = inputStream[0:index - 1]
         inputStream = inputStream[index+1:]
+
         logging.info("Peer method ::message received : " + msg)
         fields = msg.split()
         # extract the command out of inputStream buffer string
         command = fields[0]
 
         # *processing request
+
+        print("peer at {} is asking for a file".format(address))
 
         if command == "GIVE":
             fileSharing = sharedDir + "/" + fields[1]
@@ -187,6 +199,7 @@ def Peer(socketConnection, address):
                 socketConnection.close()
                 break
         elif command == "THANKS":
+            print("File Successfully Sent")
             socketConnection.close()
             break
         else:
@@ -198,6 +211,11 @@ def Peer(socketConnection, address):
 
 # reponsible for making connection to new incoming peers
 def incomingPeerConnections(peerIP, peerPORT, queue):
+
+    print("IncomingPeerConnection method  info....")
+    print("peerIP --->> {}".format(peerIP))
+    print("PeerPORT --->> {}".format(peerPORT))
+
     try:
         incomingSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     except socket.error:
@@ -214,7 +232,8 @@ def incomingPeerConnections(peerIP, peerPORT, queue):
     incomingSocket.listen(5)
     logging.info("client listening on {}:{}".format(peerIP, str(peerPORT)))
     #! possible ERROR
-    incomingPeerConnectionPORT = incomingSocket.getsockname()[1]
+    # incomingPeerConnectionPORT = incomingSocket.getsockname()[1]
+    peerPORT = incomingSocket.getsockname()[1]
     queue.put((peerIP, peerPORT))
     peerCount = 0
     while True:
@@ -230,11 +249,14 @@ def incomingPeerConnections(peerIP, peerPORT, queue):
         newPeerThread.daemon = True
         newPeerThread.start()
         # new peer is finally connected
-        print("new peer thread started")
+        print("NEW PEER :::  new thread(daemon) started")
         peerCount += 1
 
 
 def getFile(peer):
+    print("---------------------------------")
+    print("Asking for a fie from other PEER ")
+    print("---------------------------------")
     global requested
     print()
     print("file name: ")
@@ -286,6 +308,7 @@ def main():
                         format="[%(levelname)s] (%(threadName)s) %(message)s",
                         filename="client.log",
                         filemode="w")
+
     console = logging.StreamHandler()
     # TODO not doing debug anymore
     if DEBUG:
@@ -326,6 +349,7 @@ def main():
     trackerAdd = (config["trackerIP"], config["trackerPort"])
     # connect this peer with tracker
     print("printing tracker information")
+
     print(trackerAdd)  # gives correct addresss of tracker
     tracker = InitializeConnection(trackerAdd)
 
@@ -352,9 +376,12 @@ def main():
     '''
     peerListeningIP = config["peerListeningIP"]
     peerListeningPORT = config["peerListeningPORT"]
+
     queue = Queue.Queue()
+
     PeerconnectionListeningThread = Thread(name="PeerConnectionThread", target=incomingPeerConnections, args=(
         peerListeningIP, peerListeningPORT, queue))
+
     PeerconnectionListeningThread.daemon = True  # send the thread to background
     PeerconnectionListeningThread.start()
 
@@ -393,8 +420,7 @@ def main():
     #     print("inputStream is None")
     # else:
     #     print("inputStream is Not None")
-    makeConnection(tracker, inputStream, "LIST")  # !ERROR
-    #!error never called the breakPoint
+    makeConnection(tracker, inputStream, "LIST")
     print(" break point after makeConnetion LIST ..................")
 
     '''
@@ -413,13 +439,17 @@ def main():
         print("2: send file to a peer")
         print("3: new sharing Dir")
         print("4: exit the superNOVA P2P network")
+
         command = raw_input()
+
         if command == "1":
-            transmitMessageToPeer(tracker, "SENDLIST" + "\n\0")
+            transmitMessageToPeer(tracker, "SENDLIST " + "\n\0")
             makeConnection(tracker, inputStream, "SENDLIST")
 
+        # TODO FIX the option 2 in  the menu
+
         elif command == "2":
-            print(" specify the peer for address")
+            print("specify the peer for address")
 
             while True:
                 peerName = raw_input()
@@ -429,8 +459,10 @@ def main():
                 if peerName in [output.split()[0] for output in FileList]:
                     break
                 print("{} is an invalid peer name :: TRY AGAIN".format(peerName))
+
             transmitMessageToPeer(tracker, "WHERE " +
                                   peerName + "\n\0")  # TODO FIXED ERROR
+
             (peerIP, peerPORT), inputStream = makeConnection(
                 tracker, inputStream, "WHERE")
 
@@ -440,6 +472,10 @@ def main():
                 "Initializing connection[in separate thread] with {} ".format(peerName))
 
             #!ERROR HERE
+
+            print("PeerIP ----> {}".format(PeerIP))
+            print("PeerPORT ----> {}".format(peerPORT))
+
             peer = InitializeConnection((peerIP, peerPORT))
             # get the file from the peer
             getFile(peer)
