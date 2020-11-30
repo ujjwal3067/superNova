@@ -109,6 +109,7 @@ def makeConnection(connection, peer, inputStream, prevCommand):
 
         '''
     elif command == "LIST":
+        print("(int LIST ) prevCommand {} ".format(prevCommand))
         filesCount = int(fields[1])
         if filesCount != (len(lines) - 1):
             print("invalid command : wrong number of files")
@@ -181,7 +182,7 @@ def PEER(connection, address):
             print("trying to establish Connection with peer")
         inputStream, prevCommand = makeConnection(
             connection, address, inputStream, prevCommand)
-    print("Connection ESTABLISHED ....")
+        print("Connection ESTABLISHED ....")
 
 
 def main():

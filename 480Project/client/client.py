@@ -97,6 +97,7 @@ def makeConnection(tracker, inputStream, prevCommand):
 
 
 # this method is used for making socket connection with the peer
+# !ERROR HERE
 def InitializeConnection(address):
     IP, PORT = address
     try:
@@ -104,10 +105,11 @@ def InitializeConnection(address):
     except socket.error:
         logging.info("error while connection to socket")
         sys.exit(-1)
+
     try:
         peerConnection.connect((IP, PORT))
         logging.info(
-            "cannot connect to the peer or tracker {}:{} ".format(IP, PORT))
+            "CONNECTED to the peer or tracker {}:{} ".format(IP, PORT))
     except socket.error:
         logging.info("port connection error in during Initialization")
         sys.exit(-1)
@@ -149,10 +151,11 @@ def Peer(socketConnection, address):
             inputStream += socketConnection.recv(4096)
         # connection is made
         print("connection established with the peer")
+
         index = inputStream.index("\0")
         msg = inputStream[0:index - 1]
         inputStream = inputStream[index+1:]
-        logging.info("message received : " + msg)
+        logging.info("Peer method ::message received : " + msg)
         fields = msg.split()
         # extract the command out of inputStream buffer string
         command = fields[0]
@@ -203,11 +206,13 @@ def incomingPeerConnections(peerIP, peerPORT, queue):
 
     try:
         incomingSocket.bind((peerIP, peerPORT))
+        print("binding the incomingSocket in incomingPeerConnection method")
     except socket.error:
         logging.error("port {} is use already".format(incomingSocket))
         sys.exit(-1)
     # server connection for listening for incoming peer connections
     incomingSocket.listen(5)
+    #! EERROR : PORT = 0 always
     logging.info("client listening on {}:{}".format(peerIP, str(peerPORT)))
     #! possible ERROR
     incomingPeerConnectionPORT = incomingSocket.getsockname()[1]
@@ -266,6 +271,13 @@ def getFile(peer):
         sys.exit(-1)
 
 
+'''
+
+MAIN METHOD
+
+'''
+
+
 def main():
     global config
     global configFile
@@ -319,6 +331,12 @@ def main():
     tracker = InitializeConnection(trackerAdd)
 
     print("connection is done")
+    '''
+
+    HELLO COMMAND : #####################
+
+    '''
+
     inputStream = ""
     if "user" in config:
         # if the user already in the list ( tracker list)
@@ -340,9 +358,16 @@ def main():
         peerListeningIP, peerListeningPORT, queue))
     PeerconnectionListeningThread.daemon = True  # send the thread to background
     PeerconnectionListeningThread.start()
+
     peerListeningIP, peerListeningPORT = queue.get()
+    # print(" peerListIP ==> {}".format(peerListeningIP))
+    # print(" peerListPORT ==> {}".format(peerListeningPORT))
+
     PeerMsg = "LISTENING {} {}\n\0".format(peerListeningIP, peerListeningPORT)
+    print("PeerMsg is => {}".format(PeerMsg))
+
     transmitMessageToPeer(tracker, PeerMsg)
+
     makeConnection(tracker, inputStream, "LISTENING")
     print("this peer is all setup and listening for incoming peer connections")
 
@@ -356,15 +381,22 @@ def main():
     for avfile in avFile:
         msg_list += avfile + "\n"
     msg_list += "\0"
-    transmitMessageToPeer(tracker, inputStream)  # ? fixed error here
+    print("list of files are..->")
+    # transmitMessageToPeer(tracker, inputStream)  # ? fixed error here
+    transmitMessageToPeer(tracker, msg_list)  # TODO ? FIXED ERROR HERE
 
     print(" break point ..................")
     print(msg_list)
 
     print("calling make connection with LIST")
+    print("tracker is {}".format(tracker))
+    # if inputStream == None:
+    #     print("inputStream is None")
+    # else:
+    #     print("inputStream is Not None")
     makeConnection(tracker, inputStream, "LIST")  # !ERROR
     #!error never called the breakPoint
-    print(" break point ..................")
+    print(" break point after makeConnetion LIST ..................")
 
     '''
     
