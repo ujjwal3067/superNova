@@ -473,7 +473,7 @@ def main():
 
             #!ERROR HERE
 
-            print("PeerIP ----> {}".format(PeerIP))
+            print("PeerIP ----> {}".format(peerIP))
             print("PeerPORT ----> {}".format(peerPORT))
 
             peer = InitializeConnection((peerIP, peerPORT))

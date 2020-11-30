@@ -5,14 +5,14 @@
             "finalproject.pdf"
         ],
         "listeningIP": "localhost",
-        "listeningPORT": "54719"
+        "listeningPORT": "54742"
     },
     "u2": {
         "files": [
             ".DS_Store",
-            "finalproject.pdf"
+            "Planner.cs"
         ],
         "listeningIP": "localhost",
-        "listeningPORT": "54724"
+        "listeningPORT": "54746"
     }
 }

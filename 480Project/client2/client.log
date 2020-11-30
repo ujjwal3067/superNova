@@ -1,27 +1,36 @@
 [DEBUG] (MainThread) configuration : {'sharedDIR': 'test', 'peerListeningPORT': 0, 'trackerPort': 45000, 'trackerIP': 'localhost', 'peerListeningIP': 'localhost'}
 [INFO] (MainThread) CONNECTED to the peer or tracker localhost:45000 
 [INFO] (MainThread) message sent to the client
-[INFO] (MainThread) Message Received : AVAILABLE u1
+[INFO] (MainThread) Message Received : AVAILABLE u2
 [INFO] (MainThread) message sent to the client
-[INFO] (MainThread) Message Received : WELCOME u1
+[INFO] (MainThread) Message Received : WELCOME u2
 [INFO] (PeerConnectionThread) client listening on localhost:0
 [INFO] (MainThread) message sent to the client
 [INFO] (MainThread) Message Received : OK
 [INFO] (MainThread) message sent to the client
 [INFO] (MainThread) Message Received : OK
 [INFO] (MainThread) message sent to the client
-[INFO] (MainThread) Message Received : FULLLIST 2
+[INFO] (MainThread) Message Received : FULLLIST 4
 u1 .DS_Store
 u1 finalproject.pdf
+u2 .DS_Store
+u2 Planner.cs
 [INFO] (MainThread) message sent to the client
 [INFO] (MainThread) Message Received : FULLLIST 4
 u1 .DS_Store
 u1 finalproject.pdf
 u2 .DS_Store
 u2 Planner.cs
-[INFO] (PeerConnectionThread) Peer connected with address 127.0.0.1:54748
-[INFO] (peer 0) Peer method ::message received : GIVE finalproject.pdf
-[INFO] (peer 0) message sent to the client
-[INFO] (peer 0) file test/finalproject.pdf SENT to the peer
-[INFO] (peer 0) Peer method ::message received : THANKS
-[INFO] (MainThread) quit the programme :: force close 
+[INFO] (MainThread) message sent to the client
+[INFO] (MainThread) Message Received : FULLLIST 4
+u1 .DS_Store
+u1 finalproject.pdf
+u2 .DS_Store
+u2 Planner.cs
+[INFO] (MainThread) message sent to the client
+[INFO] (MainThread) Message Received : AT localhost 54742
+[INFO] (MainThread) CONNECTED to the peer or tracker localhost:54742 
+[INFO] (MainThread) message sent to the client
+[INFO] (MainThread) message received : TAKE 74053
+[INFO] (MainThread) file finalproject.pdf recieved
+[INFO] (MainThread) message sent to the client
