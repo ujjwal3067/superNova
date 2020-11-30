@@ -1,0 +1,18 @@
+{
+    "u1": {
+        "files": [
+            ".DS_Store",
+            "finalproject.pdf"
+        ],
+        "listeningIP": "localhost",
+        "listeningPORT": "54719"
+    },
+    "u2": {
+        "files": [
+            ".DS_Store",
+            "finalproject.pdf"
+        ],
+        "listeningIP": "localhost",
+        "listeningPORT": "54724"
+    }
+}
