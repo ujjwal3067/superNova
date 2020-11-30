@@ -124,7 +124,7 @@ def makeConnection(connection, peer, inputStream, prevCommand):
 
         '''
         SENDLIST COMMAND :#################
-        
+
         '''
 
     elif command == "SENDLIST":
@@ -178,8 +178,10 @@ def PEER(connection, address):
         else:
             inputStream += incomingConnectionRequest
             # try to establish a connection
+            print("trying to establish Connection with peer")
         inputStream, prevCommand = makeConnection(
             connection, address, inputStream, prevCommand)
+    print("Connection ESTABLISHED ....")
 
 
 def main():
@@ -209,6 +211,10 @@ def main():
     try:
         serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     except socket.error:
+        print("error in server socket")
+        print("exiting the shuting down the tracker .....")
+        print("Tracker/Server is down.. ")
+        print("Please try to restart ...")
         sys.exit(-1)
 
     host = config["HOST"]
