@@ -5,17 +5,40 @@
 from __future__ import print_function
 from ast import NodeTransformer
 import json
-import logging
 import os
 import signal
 import socket
 import sys
 from threading import Thread
 
-from library.library import sigint_handler
-from library.library import json_load
-from library.library import json_save
-from library.library import transmitMessageToPeer
+
+def sigint_handler(signal, frame):
+    print()
+    sys.exit(0)
+
+
+def transmitMessageToPeer(connection, message):
+    try:
+        connection.sendall(message)
+    except socket.error:
+        sys.exit(-1)
+
+
+def json_load(jsonFile):
+    with open(jsonFile, "rb") as filewriter:
+        jsonObj = json.load(filewriter)
+    return jsonObj
+
+
+def json_save(jsonFile, jsonObj):
+    with open(jsonFile, "wb+") as filewriter:
+        json.dump(jsonObj, filewriter, sort_keys=True,
+                  indent=4, separators=(",", ": "))
+
+
+def workingFile():
+    print("yes library is working now")
+
 
 # json file
 configFile = ""
@@ -39,7 +62,6 @@ def makeConnection(connection, peer, inputStream, prevCommand):
         index = inputStream.index("\0")
         msg = inputStream[0:index - 1]
         inputStream = inputStream[index+1:]
-    logging.info("Message from Peer: " + str(msg))
     # split the msg from peer
     lines = msg.split("\n")
     fields = lines[0].split()
@@ -197,7 +219,6 @@ def main():
     global config
     global peersFile
     global peers
-    # TODO : skip logging
     configFile = "config.json"
     peersFile = "peers.json"
     if os.path.isfile(configFile):

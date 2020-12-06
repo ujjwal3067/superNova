@@ -1,18 +1,44 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
 from __future__ import print_function
-import logging
 import os
 import signal
 import socket
 import sys
 import Queue
+import json
 from threading import Thread
-from library.library import sigint_handler
-from library.library import json_load
-from library.library import json_save
-from library.library import transmitMessageToPeer
+
+
+def sigint_handler(signal, frame):
+    print()
+    sys.exit(0)
+
+
+def transmitMessageToPeer(connection, message):
+    try:
+        connection.sendall(message)
+    except socket.error:
+        sys.exit(-1)
+
+
+def json_load(jsonFile):
+    with open(jsonFile, "rb") as filewriter:
+        jsonObj = json.load(filewriter)
+    return jsonObj
+
+
+def json_save(jsonFile, jsonObj):
+    with open(jsonFile, "wb+") as filewriter:
+        json.dump(jsonObj, filewriter, sort_keys=True,
+                  indent=4, separators=(",", ": "))
+
+
+def workingFile():
+    print("yes library is working now")
+
 
 # global variables
 configFile = ""
