@@ -1,5 +1,3 @@
-#makefile 
-#author Ujjwal kumar ID : 260730680
 
 .PHONY: default
 default: clean 

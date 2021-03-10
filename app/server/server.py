@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Author : Ujjwal Kumar
-#  ID : 260730680
-
 
 from __future__ import print_function
 import logging
@@ -272,7 +269,8 @@ def main():
     except socket.error:
         # cli_output
         logging.error("port {} in use, exiting".format(port))
-        sys.exit(-1)
+        sys.exit(-1) # Quit the app ? cannot connect to port
+
 
     # listen for incoming connections
     server_socket.listen(5)
@@ -299,7 +297,6 @@ def main():
         client_thread.start()
 
         client_counter += 1
-
 
 if __name__ == "__main__":
     main()
