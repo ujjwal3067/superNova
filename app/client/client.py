@@ -34,7 +34,9 @@ def makeConnection(tracker, inputStream, prevCommand):
     else:
         index = inputStream.index("\0")
         msg = inputStream[0:index-1]
-        inputStream = inputStream[index + 1:]
+        # inputStream = inputStream[index + 1:]
+        inputStream = inputSTream[index + 1:]
+
     logging.info("Message Received : " + msg)
 
     lines = msg.split("\n")
